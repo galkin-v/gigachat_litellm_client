@@ -1,10 +1,22 @@
+[build-system]
+# This tells pip what tools are needed to build your package.
+# You can usually just copy-paste this section.
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "gigachat-litellm-client"
 version = "0.1.0"
-description = "Add your description here"
+description = "A client library for GigaChat with LiteLLM integration."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "litellm>=1.76.1",
     "pydantic-settings>=2.10.1",
 ]
+
+[tool.setuptools]
+# --- IMPORTANT: Tell setuptools where to find your code ---
+# This links the configuration to your actual source files.
+package-dir = {"" = "src"}
+packages = ["gigachat_litellm_client"]

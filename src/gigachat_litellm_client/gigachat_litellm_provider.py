@@ -9,7 +9,7 @@ from litellm.utils import Usage
 
 from auth import GigaChatOAuthTokenAuthorizationMiddleware
 from giga import GigaChatPayload, GigaChatResponse
-from settings import GigaSettings
+from gigachat_litellm_client.settings import GigaSettings
 
 
 class CustomModelResponse(ModelResponse):

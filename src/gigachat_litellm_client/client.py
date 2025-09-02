@@ -3,7 +3,7 @@ import uuid
 from aiohttp import ClientSession, TCPConnector
 from auth import GigaChatOAuthTokenAuthorizationMiddleware
 from giga import GigaChatPayload, GigaChatResponse, Message
-from settings import GigaSettings
+from gigachat_litellm_client.settings import GigaSettings
 
 
 class GigaChatClient:
