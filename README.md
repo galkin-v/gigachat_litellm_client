@@ -1,7 +1,7 @@
 ## Example usage
 
 ```python
-from gigachat_litellm_provider import gigachat_handler
+from gigachat_litellm_client import gigachat_handler
 
 response = gigachat_handler.completion(
     "GigaChat-2",
@@ -15,7 +15,7 @@ print(response.content)  # 'Привет. Как настроение?'
 
 ```python
 import nest_asyncio
-from gigachat_litellm_provider import gigachat_handler
+from gigachat_litellm_client import gigachat_handler
 
 nest_asyncio.apply()
 
