@@ -7,9 +7,9 @@ from litellm import APIError, Choices, CustomLLM, ModelResponse, RateLimitError
 from litellm.utils import Message as LiteLLMMessage
 from litellm.utils import Usage
 
-from auth import GigaChatOAuthTokenAuthorizationMiddleware
-from giga import GigaChatPayload, GigaChatResponse
-from gigachat_litellm_client.settings import GigaSettings
+from .auth import GigaChatOAuthTokenAuthorizationMiddleware
+from .giga import GigaChatPayload, GigaChatResponse
+from .settings import GigaSettings
 
 
 class CustomModelResponse(ModelResponse):

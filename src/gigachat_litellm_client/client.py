@@ -1,9 +1,10 @@
 import uuid
 
 from aiohttp import ClientSession, TCPConnector
-from auth import GigaChatOAuthTokenAuthorizationMiddleware
-from giga import GigaChatPayload, GigaChatResponse, Message
-from gigachat_litellm_client.settings import GigaSettings
+
+from .auth import GigaChatOAuthTokenAuthorizationMiddleware
+from .giga import GigaChatPayload, GigaChatResponse, Message
+from .settings import GigaSettings
 
 
 class GigaChatClient:
@@ -62,4 +63,5 @@ class GigaChatClient:
 
             data = GigaChatResponse(**await response.json())
 
+            return data
             return data
