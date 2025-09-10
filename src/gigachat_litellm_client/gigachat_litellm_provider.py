@@ -44,7 +44,12 @@ class GigaChatLLM(CustomLLM):
             self._session = aiohttp.ClientSession(
                 connector=connector,
                 middlewares=[auth_middleware],
-                timeout=aiohttp.ClientTimeout(total=self.settings.timeout),
+                timeout=aiohttp.ClientTimeout(
+                    total=self.settings.timeout,
+                    connect=self.settings.timeout,
+                    sock_connect=self.settings.timeout,
+                    sock_read=self.settings.timeout,
+                ),
             )
         return self._session
 
