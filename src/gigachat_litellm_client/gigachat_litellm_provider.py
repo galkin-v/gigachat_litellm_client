@@ -30,11 +30,18 @@ class GigaChatLLM(CustomLLM):
         self._session: Optional[aiohttp.ClientSession] = None
 
     async def _get_session(self) -> aiohttp.ClientSession:
-        if self._session is None or self._session.closed:
+        try:
+            if self._session is not None and not self._session.closed:
+                return self._session
+            
+            if self._session is not None:
+                await self._session.close()
+            
             connector = aiohttp.TCPConnector(
                 limit=self.settings.limit,
                 force_close=self.settings.force_close,
                 ssl=self.settings.verify_ssl_certs,
+                enable_cleanup_closed=True,
             )
             auth_middleware = GigaChatOAuthTokenAuthorizationMiddleware(
                 url=self.settings.auth_url,
@@ -51,7 +58,15 @@ class GigaChatLLM(CustomLLM):
                     sock_read=self.settings.timeout,
                 ),
             )
-        return self._session
+            return self._session
+        except Exception as e:
+            if self._session:
+                await self._session.close()
+            raise APIError(
+                message=f"Failed to create session: {str(e)}",
+                llm_provider="gigachat-provider",
+                status_code=500,
+            )
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Ensure the session is closed gracefully on exit."""
@@ -132,7 +147,20 @@ class GigaChatLLM(CustomLLM):
         self, model: str, messages: List[Dict], **kwargs
     ) -> CustomModelResponse:
         """Synchronous wrapper for acompletion."""
-        return asyncio.run(self.acompletion(model=model, messages=messages, **kwargs))
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        
+        async def _run_completion():
+            try:
+                return await self.acompletion(model=model, messages=messages, **kwargs)
+            finally:
+                if self._session and not self._session.closed:
+                    await self._session.close()
+        
+        return loop.run_until_complete(_run_completion())
 
     def convert_response(
         self, giga_response: GigaChatResponse, original_model: str
