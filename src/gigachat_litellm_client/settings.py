@@ -5,7 +5,7 @@ class GigaSettings(BaseSettings):
     url: str = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
     limit: int = 100
     force_close: bool = True
-    timeout: int = 3
+    timeout: int = 1800
 
     auth_url: str = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
 

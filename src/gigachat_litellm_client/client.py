@@ -64,4 +64,3 @@ class GigaChatClient:
             data = GigaChatResponse(**await response.json())
 
             return data
-            return data
