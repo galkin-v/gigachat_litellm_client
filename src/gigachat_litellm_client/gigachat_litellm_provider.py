@@ -35,7 +35,13 @@ class GigaChatLLM(CustomLLM):
                 return self._session
             
             if self._session is not None:
-                await self._session.close()
+                try:
+                    await self._session.close()
+                except Exception:
+                    # Ignore cleanup errors during session recreation
+                    pass
+                finally:
+                    self._session = None
             
             connector = aiohttp.TCPConnector(
                 limit=self.settings.limit,
@@ -61,7 +67,13 @@ class GigaChatLLM(CustomLLM):
             return self._session
         except Exception as e:
             if self._session:
-                await self._session.close()
+                try:
+                    await self._session.close()
+                except Exception:
+                    # Ignore cleanup errors during error handling
+                    pass
+                finally:
+                    self._session = None
             raise APIError(
                 message=f"Failed to create session: {str(e)}",
                 llm_provider="gigachat-provider",
@@ -71,10 +83,16 @@ class GigaChatLLM(CustomLLM):
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Ensure the session is closed gracefully on exit."""
         if self._session and not self._session.closed:
-            await self._session.close()
+            try:
+                await self._session.close()
+            except Exception:
+                # Ignore cleanup errors during exit
+                pass
+            finally:
+                self._session = None
 
     async def acompletion(
-        self, model: str, messages: List[Dict | LiteLLMMessage], **kwargs
+        self, model: str, messages: List[Dict], **kwargs
     ) -> CustomModelResponse:
         """The main async completion method called by LiteLLM."""
         session = await self._get_session()
@@ -152,14 +170,17 @@ class GigaChatLLM(CustomLLM):
         except RuntimeError:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-        
+
         async def _run_completion():
             try:
                 return await self.acompletion(model=model, messages=messages, **kwargs)
             finally:
                 if self._session and not self._session.closed:
-                    await self._session.close()
-        
+                    try:
+                        await self._session.close()
+                    except Exception:
+                        pass
+
         return loop.run_until_complete(_run_completion())
 
     def convert_response(

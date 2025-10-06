@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -21,7 +22,7 @@ class Dialogue(BaseModel):
 
 
 class GigaChatPayload(BaseModel):
-    messages: list[Message]
+    messages: List[Message]
     model: str
     temperature: float
     max_tokens: int
@@ -39,11 +40,11 @@ class Usage(BaseModel):
     completion_tokens: int
     total_tokens: int
     precached_prompt_tokens: int
-    prom_speed: float | None = None
+    prom_speed: Optional[float] = None
 
 
 class GigaChatResponse(BaseModel):
-    choices: list[Choice]
+    choices: List[Choice]
     created: int
     model: str
     object: str
