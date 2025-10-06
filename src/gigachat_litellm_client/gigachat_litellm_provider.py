@@ -119,14 +119,15 @@ class GigaChatLLM(CustomLLM):
         payload_data = {
             "model": actual_model_name,
             "messages": messages_dicts,
-            "temperature": optional_params.get("temperature", 1.0),
+            "temperature": optional_params.get("temperature", 0.0000001),
+            "max_tokens": optional_params.get("max_tokens", 512),
             **{
                 k: v
                 for k, v in optional_params.items()
                 if k in GigaChatPayload.model_fields
             },
         }
-        payload = GigaChatPayload(**payload_data, max_tokens=512, profanity_check=False)
+        payload = GigaChatPayload(**payload_data, profanity_check=False)
 
         try:
             async with session.post(
